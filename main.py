@@ -4,7 +4,7 @@ from puerto import Puerto;
 
 
 if __name__ == '__main__':
-    Cargo_Imaginary_Company = Puerto();
+    Cargo_Imaginary_Company = Puerto(False);
     modo = 'container';
     print('Bienvenido al control de inventario de Cargo Imaginary Company');
     print('¿Desea inicializar el puerto con 988 contenedores y 369 autos?');

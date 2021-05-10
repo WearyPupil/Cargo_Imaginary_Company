@@ -47,7 +47,7 @@ class Puerto:
             """Mostrar los datos almacenados en el cuaderno"""
             print(self._posiciones);
 
-    def __init__(self):
+    def __init__(self, display):
         """Iniciar datos del puerto"""
         self.pila_conte = [ArrayStack() for i in range(Puerto.MAX_CONTENEDORES)]
         self.cola_auto = [ArrayQueue() for i in range(Puerto.MAX_COLAS)];
@@ -57,18 +57,29 @@ class Puerto:
         self.puntero_colas = 0;
         self.cuaderno_pilas = Puerto._Cuaderno();
         self.cuaderno_colas = Puerto._Cuaderno();
+        self.display = display;
 
     def apilar(self, elemento):
         """Apilar un contenedor"""
         self.cuaderno_pilas._ordenar();
         if self.cuaderno_pilas._buscar(elemento):
+            temp_1 = 'Ya existe ese serial en los contenedores';
             print('Ya existe ese serial en los contenedores');
-            return None;
+            if self.display == True:
+                return temp_1;
+            else:
+                print(temp_1);
+                return None;
 
         if self.contenedores == Puerto.MAX_CONTENEDORES:
-            print('Se ha llegado al 99% de ocupación');
-            print('No se puede agregar mas contenedores');
-            return None;
+            temp_1 = 'Se ha llegado al 99% de ocupacion';
+            temp_2 = 'No se puede agregar mas contenedores';
+            if self.display:
+                return temp_1, temp_2;
+            else:
+                print(temp_1);
+                print(temp_2);
+                return None;
 
         while len(self.pila_conte[self.puntero_pilas]) == 5:
             self.puntero_pilas += 1;
@@ -78,37 +89,46 @@ class Puerto:
         altura = len(self.pila_conte[self.puntero_pilas]);
         self.cuaderno_pilas._agregar(elemento, altura, self.puntero_pilas);
         # Imprimir tiempo y posicion
-        print(f"Se ha recibido el contenedor con serial {elemento}");
-        print("Se apilo en 180 segundos");
-        print(f"Se encuentra ubicado en la pila: {self.puntero_pilas + 1}");
-        print(f"Posicion en la pila es: {altura}");
+        temp_1 = 'Se ha recibido el contenedor con serial ' + str(elemento);
+        temp_2 = 'Se apilo en 180 segundos';
+        temp_3 = 'Se encuentra ubicado en la pila: ' + str(self.puntero_pilas + 1);
+        temp_4 = 'Posicion en la pila es ' + str(altura);
+        if self.display:
+            return temp_1, temp_2, temp_3, temp_4;
+        else:
+            print(temp_1);
+            print(temp_2);
+            print(temp_3);
+            print(temp_4);
 
     def desapilar(self, elemento):
         """Desapilar un contenedor"""
         self.cuaderno_pilas._ordenar();
         nota = self.cuaderno_pilas._buscar(elemento);
         if not nota:
-            print('No se ha encontrado el serial en los contenedores');
-            return None;
-
-        print(f"El tiempo de entrega es {(((5 - nota[1])*60)+60) + 180} segundos");
+            temp_1 = 'No se ha encontrado el serial en los contenedores';
+            if self.display:
+                return temp_1;
+            else:
+                print(temp_1);
+                return None;
+        temp_1 = 'El tiempo de entrega es ' + str(((len(self.pila_conte[nota[2]])-nota[1])*60)+240) + ' segundos';
+        temp_2 = str(len(self.pila_conte[nota[2]]) - nota[1]) + ' contenedores se han movido a la pila 200';
+        temp_3 = str(len(self.pila_conte[nota[2]]) - nota[1]) + ' contenedores han regresado a la pila ' + str(nota[2] +1);
         #[serial, posicion_en_pila, pila]
         for i in range(int(len(self.pila_conte[nota[2]])) - nota[1]):
             migrar = self.pila_conte[nota[2]].pop();
             borrar = self.cuaderno_pilas._buscar(migrar);
             self.cuaderno_pilas._quitar(borrar);
             self.pila_conte[199].push(migrar);
-        print(f"{5 - nota[1]} contenedores se han movido a la pila 200");
-        print(f"{5 - nota[1]} contenedores se han movido a la pila {nota[2]+1}")
         # Entregando el contenedor requerido
         entrega = self.pila_conte[nota[2]].pop();
         entregado = self.cuaderno_pilas._buscar(entrega);
         self.cuaderno_pilas._quitar(entregado);
         # Se elimina resta un contenedor al puerto
         self.contenedores -= 1;
-        print(f"Se ha hecho la entrega del contenedor con serial {entrega}");
-        print(f"el contenedor se ubicaba en la pila {nota[2]+1}");
-
+        temp_4 = 'Se ha hecho la entrega del contenedor con serial ' + str(entrega);
+        temp_5 = 'El contenedor se ubicaba en la pila ' + str(nota[2]+1);
         # Regresando los contenedores anteriores a su lugar.
         for i in range(len(self.pila_conte[199])):
             migrar = self.pila_conte[199].pop();
@@ -119,17 +139,35 @@ class Puerto:
         # Reiniciando el puntero para llenar pilas vacías si existen.
         self.puntero_pilas = 0;
 
+        if self.display:
+            return temp_1, temp_2, temp_3, temp_4, temp_5;
+        else:
+            print(temp_1);
+            print(temp_2);
+            print(temp_3);
+            print(temp_4);
+            print(temp_5);
+
     def encolar(self, elemento):
         """Encolar un auto"""
         if self.autos == Puerto.MAX_AUTOS:
-            print('Se ha llegado al 99% de ocupación');
-            print('No se puede agregar mas automoviles')
-            return None;
+            temp_1 = 'Se ha llegado al 99% de ocupacio';
+            temp_2 = 'No se puede agregar mas automoviles';
+            if self.display:
+                return temp_1, temp_2;
+            else:
+                print(temp_1);
+                print(temp_2);
+                return None;
 
         self.cuaderno_colas._ordenar();
         if self.cuaderno_colas._buscar(elemento):
-            print('Ya existe ese serial en los automoviles');
-            return None;
+            temp_1 = 'Ya existe ese serial en los automoviles';
+            if self.display:
+                return temp_1;
+            else:
+                print(temp_1);
+                return None;
 
         while len(self.cola_auto[self.puntero_colas]) == 15:
             self.puntero_colas += 1;
@@ -139,37 +177,50 @@ class Puerto:
         altura = len(self.cola_auto[self.puntero_colas]);
         self.cuaderno_colas._agregar(elemento, altura, self.puntero_colas);
         # Imprimir tiempo y posicion
-        print(f"Se ha recibido el automovil con serial {elemento}");
-        print("Se encolo en 120 segundos");
-        print(f"Se encuentra ubicado en la cola: {self.puntero_colas + 1}");
-        print(f"Posicion en la cola es: {altura}");
+        temp_1 = 'Se ha recibido el automovil con serial ' + str(elemento);
+        temp_2 = 'Se encolo en 120 segundos';
+        temp_3 = 'Esta en la cola ' + str(self.puntero_colas + 1);
+        temp_4 = 'Posicion en la cola es ' + str(altura);
+
+        if self.display:
+            return temp_1, temp_2, temp_3, temp_4;
+        else:
+            print(temp_1);
+            print(temp_2);
+            print(temp_3);
+            print(temp_4);
 
     def desencolar(self, elemento):
         """Desencolar un auto"""
         self.cuaderno_colas._ordenar();
         nota = self.cuaderno_colas._buscar(elemento);
         if not nota:
-            print('No se ha encontrado el serial en los autos');
-            return None;
+            temp_1 = 'No se ha encontrado el serial en los autos';
+            if self.display:
+                return temp_1;
+            else:
+                print(temp_1);
+                return None;
 
-        print(f"El tiempo de entrega es {(nota[1]*20) + 120} segundos");
+        temp_1 = 'El tiempo de entrega es ' + str((nota[1]*20) + 120) + ' segundos';
         #[serial, posicion_en_pila, cola]
         for i in range(int(nota[1] - 1)):
             migrar = self.cola_auto[nota[2]].dequeue();
             self.cola_auto[nota[2]].enqueue(migrar);
-        print(f"Se han movido {nota[1] - 1} vehiculos a la cola {nota[2] + 1}");
+        temp_2 = 'Se han movido ' + str(nota[1] - 1) + ' automoviles a la cola ' + str(nota[2] + 1);
         # Entregando el automóvil requerido.
         entrega = self.cola_auto[nota[2]].dequeue();
         entregado = self.cuaderno_colas._buscar(entrega);
         self.cuaderno_colas._quitar(entregado);
-        print(f"Se ha hecho la entrega del automovil con serial {entrega}");
-        print(f"El automovil se encontraba en la cola {nota[2] + 1}");
+        temp_3 = 'Se ha hecho la entrega del automovil con serial ' + str(entrega);
+        temp_4 = 'El automovil se encontraba en la cola ' + str(nota[2] + 1);
         # Se elimina un automovil del puerto
         self.autos -= 1;
 
         # Actualizando posiciones
         posicion = 1
         for serial in self.cola_auto[nota[2]]._data:
+            self.cuaderno_colas._ordenar();
             update = self.cuaderno_colas._buscar(serial);
             self.cuaderno_colas._quitar(update);
             self.cuaderno_colas._agregar(serial, posicion, nota[2]);
@@ -177,6 +228,13 @@ class Puerto:
 
         # Reiniciando el puntero para llenar colas vacías si existen.
         self.puntero_colas = 0;
+        if self.display:
+            return temp_1, temp_2, temp_3, temp_4;
+        else:
+            print(temp_1);
+            print(temp_2);
+            print(temp_3);
+            print(temp_4);
 
     def observar_pilas(self, desde, hasta):
         """Observar la cantidad de elementos en las pilas requeridas"""
@@ -186,8 +244,11 @@ class Puerto:
 
     def observar_pila(self, pila):
         """Observar una pila en particular"""
-        for i in self.pila_conte[pila]._data[::-1]:
-            print(f"[{i}]")
+        if self.display:
+            return self.pila_conte[pila]._data;
+        else:
+            for i in self.pila_conte[pila]._data[::-1]:
+                print(f"[{i}]")
 
     def observar_colas(self, desde, hasta):
         """Observar la cantidad de elementos en las colas requeridas"""
@@ -197,7 +258,10 @@ class Puerto:
 
     def observar_cola(self, cola):
         """Observar una cola en particular"""
-        print(self.cola_auto[cola]._data[::-1]);
+        if self.display:
+            return self.cola_auto[cola]._data[::-1];
+        else:
+            print(self.cola_auto[cola]._data[::-1]);
 
     def observar_ultima_pila(self):
         """Observar la ultima pila"""
@@ -209,28 +273,55 @@ class Puerto:
 
     def buscar_serial_pilas(self, elemento):
         """Buscar un contenedor"""
+        self.cuaderno_pilas._ordenar();
         nota = self.cuaderno_pilas._buscar(elemento);
         if not nota:
-            print('No se ha encontrado el serial en los contenedores');
-            return None;
+            temp_1 = 'No se ha encontrado el serial en los contenedores';
+            if self.display:
+                return temp_1;
+            else:
+                print(temp_1);
+                return None;
 
-        print(f"El contenedor se encuentra en la pila {nota[2] + 1}");
-        print(f"La posicion en la pila es {nota[1]}");
+        temp_1 = 'El contenedor se encuentra en la pila ' + str(nota[2] + 1);
+        temp_2 = 'La posicion en la pila es ' + str(nota[1]);
+
+        if self.display:
+            return temp_1, temp_2;
+        else:
+            print(temp_1);
+            print(temp_2);
 
     def buscar_serial_colas(self, elemento):
         """Buscar un automovil"""
+        self.cuaderno_colas._ordenar();
         nota = self.cuaderno_colas._buscar(elemento);
         if not nota:
-            print('No se ha encontrado el serial en los automoviles');
-            return None;
+            temp_1 = 'No se ha encontrado el serial en los automoviles';
+            if self.display:
+                return temp_1;
+            else:
+                print(temp_1);
+                return None;
 
-        print(f"El automovil se encuentra en la cola {nota[2] + 1}");
-        print(f"La posicion en la cola es {nota[1]}");
+        temp_1 = 'El automovil se encuentra en la cola ' + str(nota[2] + 1);
+        temp_2 = 'La posicion en la cola es ' + str(nota[1]);
+
+        if self.display:
+            return temp_1, temp_2;
+        else:
+            print(temp_1);
+            print(temp_2);
 
     def total(self):
         """Imprime el numero de contenedores y automoviles en el puerto"""
-        print(f"numero de contenedores: {self.contenedores}");
-        print(f"numero de automoviles: {self.autos}");
+        temp_1 = 'numero de contenedores: ' + str(self.contenedores);
+        temp_2 = 'numero de automoviles: ' + str(self.autos);
+        if self.display:
+            return temp_1, temp_2;
+        else:
+            print(temp_1);
+            print(temp_2);
 
     def _inicializar(self):
         for i in range(1, 989, 1):
